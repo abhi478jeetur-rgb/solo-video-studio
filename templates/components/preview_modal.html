@@ -1,0 +1,76 @@
+<!-- Universal Video Player Lightbox Modal -->
+<div id="video-preview-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-overlay p-4">
+    <div class="bg-[#111111] rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl border border-[#333333] flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+        <!-- Modal Header -->
+        <div class="bg-[#1a1a1a] border-b border-[#2a2a2a] px-6 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl bg-[#E95722]/20 flex items-center justify-center text-[#E95722]">
+                    <i data-lucide="play" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h3 id="modal-video-title" class="text-sm font-bold text-white truncate max-w-xs sm:max-w-md">Video Preview</h3>
+                    <p id="modal-video-sub" class="text-[11px] text-[#777777]">Interactive Clip Player</p>
+                </div>
+            </div>
+            <button type="button" onclick="window.closeVideoModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#333333] text-[#aaaaaa] hover:text-white transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Video Player Body -->
+        <div class="bg-black flex items-center justify-center p-2 relative flex-1 min-h-[300px] max-h-[520px]">
+            <video id="modal-video-player" class="w-full h-full max-h-[500px] object-contain rounded-xl" controls preload="metadata"></video>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-[#1a1a1a] border-t border-[#2a2a2a] px-6 py-3.5 flex items-center justify-between">
+            <span id="modal-video-size" class="text-xs font-mono text-[#888888]">Size: --</span>
+            <div class="flex items-center gap-2">
+                <a id="modal-video-download" href="#" download class="btn-solo-primary px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>Download Clip</span>
+                </a>
+                <button type="button" onclick="window.closeVideoModal()" class="px-4 py-2 rounded-xl border border-[#333333] text-xs font-semibold text-[#aaaaaa] hover:text-white hover:bg-[#2a2a2a] transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Storyboard Image Lightbox Modal -->
+<div id="image-preview-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden modal-overlay p-4">
+    <div class="bg-[#111111] rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl border border-[#333333] flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-200">
+        <div class="bg-[#1a1a1a] border-b border-[#2a2a2a] px-6 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl bg-[#E95722]/20 flex items-center justify-center text-[#E95722]">
+                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h3 id="modal-image-title" class="text-sm font-bold text-white truncate max-w-xs sm:max-w-md">Storyboard Preview</h3>
+                    <p id="modal-image-sub" class="text-[11px] text-[#777777]">High-Resolution Thumbnail Grid</p>
+                </div>
+            </div>
+            <button type="button" onclick="window.closeImageModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#333333] text-[#aaaaaa] hover:text-white transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div class="bg-[#0a0a0a] flex items-center justify-center p-4 overflow-auto flex-1 max-h-[600px]">
+            <img id="modal-image-viewer" src="" class="max-w-full max-h-[560px] object-contain rounded-xl shadow-lg border border-[#222222]" alt="Storyboard Grid">
+        </div>
+
+        <div class="bg-[#1a1a1a] border-t border-[#2a2a2a] px-6 py-3.5 flex items-center justify-between">
+            <span id="modal-image-info" class="text-xs text-[#888888]">Click Download to save full resolution</span>
+            <div class="flex items-center gap-2">
+                <a id="modal-image-download" href="#" download class="btn-solo-primary px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>Download Storyboard</span>
+                </a>
+                <button type="button" onclick="window.closeImageModal()" class="px-4 py-2 rounded-xl border border-[#333333] text-xs font-semibold text-[#aaaaaa] hover:text-white hover:bg-[#2a2a2a] transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

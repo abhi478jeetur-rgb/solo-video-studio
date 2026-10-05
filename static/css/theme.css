@@ -1,0 +1,112 @@
+/* Solo Brand Theme & Aesthetics */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --solo-orange: #E95722;
+    --solo-cream: #F7EBDD;
+    --solo-cream-light: #FDF9F3;
+    --solo-black: #111111;
+    --solo-gray: #777777;
+    --solo-gray-light: #E5DCD0;
+    --solo-soft-orange: #F28A5B;
+    --solo-orange-glow: rgba(233, 87, 34, 0.2);
+}
+
+body {
+    background-color: var(--solo-cream);
+    color: var(--solo-black);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
+}
+
+h1, h2, h3, .font-headline {
+    font-family: 'Playfair Display', serif;
+}
+
+/* Solo Pill Badges & Buttons */
+.btn-solo-primary {
+    background-color: var(--solo-orange);
+    color: #FFFFFF;
+    transition: all 0.2s ease-in-out;
+}
+.btn-solo-primary:hover {
+    background-color: #d44917;
+    box-shadow: 0 8px 20px var(--solo-orange-glow);
+    transform: translateY(-1px);
+}
+.btn-solo-primary:active {
+    transform: translateY(0);
+}
+
+.btn-solo-secondary {
+    background-color: #FFFFFF;
+    border: 1.5px solid var(--solo-gray-light);
+    color: var(--solo-black);
+    transition: all 0.2s ease-in-out;
+}
+.btn-solo-secondary:hover {
+    border-color: var(--solo-orange);
+    color: var(--solo-orange);
+    background-color: var(--solo-cream-light);
+}
+
+.btn-solo-soft {
+    background-color: rgba(233, 87, 34, 0.1);
+    color: var(--solo-orange);
+    transition: all 0.2s ease-in-out;
+}
+.btn-solo-soft:hover {
+    background-color: rgba(233, 87, 34, 0.18);
+}
+
+/* Tab Navigation */
+.nav-tab-btn {
+    color: var(--solo-gray);
+    transition: all 0.25s ease;
+    border-radius: 9999px;
+    font-weight: 600;
+}
+.nav-tab-btn.active {
+    background-color: var(--solo-black);
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(17, 17, 17, 0.2);
+}
+
+/* Card Styling */
+.solo-card {
+    background: #FFFFFF;
+    border: 1px solid var(--solo-gray-light);
+    box-shadow: 0 10px 30px rgba(17, 17, 17, 0.04);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--solo-cream);
+}
+::-webkit-scrollbar-thumb {
+    background: #d4c5b3;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--solo-soft-orange);
+}
+
+/* Modal Transition */
+.modal-overlay {
+    background: rgba(17, 17, 17, 0.55);
+    backdrop-filter: blur(4px);
+    transition: opacity 0.2s ease;
+}
+
+/* Mascot Pulse Effect */
+@keyframes sparkPulse {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.15) rotate(5deg); }
+}
+.mascot-spark {
+    animation: sparkPulse 2.5s infinite ease-in-out;
+}

@@ -1,0 +1,138 @@
+<!-- Tab: Video Splitter -->
+<div id="tab-splitter" class="tab-pane">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold text-[#111111] font-headline mb-1">Video Segment Splitter</h2>
+        <p class="text-sm text-[#777777]">Split videos into precise 10-second (or custom) clips ready for Reels, Shorts, and TikTok.</p>
+    </div>
+
+    <form id="splitter-form" class="space-y-6">
+        <!-- Input Folder -->
+        <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+                <label for="split_input" class="text-xs font-bold text-[#111111] uppercase tracking-wider">Input Folder (Videos to Split)</label>
+                <div class="flex gap-2">
+                    <button type="button" onclick="window.fsExplorer.setPathDirectly('split_input', '{{ default_input | replace('\\', '/') }}')" class="text-[11px] text-[#E95722] hover:underline font-medium">Use Default Input</button>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <div class="relative flex-1">
+                    <input type="text" id="split_input" name="input_folder" value="{{ default_input }}" placeholder="e.g. D:\Videos or click Browse" class="w-full pl-3.5 pr-10 py-2.5 bg-white border border-[#E5DCD0] rounded-2xl text-sm focus:outline-none focus:border-[#E95722] transition text-[#111111]">
+                    <div id="split_input_status" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs flex items-center"></div>
+                </div>
+                <button type="button" onclick="window.fsExplorer.open('split_input', 'folder', 'Select Input Folder')" class="btn-solo-secondary px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                    <i data-lucide="folder-open" class="w-4 h-4 text-[#E95722]"></i>
+                    <span>Browse</span>
+                </button>
+            </div>
+            <div id="split_input_feedback" class="text-xs text-[#777777] flex items-center gap-1.5"></div>
+        </div>
+
+        <!-- Output Folder -->
+        <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+                <label for="split_output" class="text-xs font-bold text-[#111111] uppercase tracking-wider">Output Folder (Saved Clips)</label>
+                <button type="button" onclick="window.fsExplorer.setPathDirectly('split_output', '{{ default_output | replace('\\', '/') }}')" class="text-[11px] text-[#E95722] hover:underline font-medium">Use Default Output</button>
+            </div>
+            <div class="flex gap-2">
+                <div class="relative flex-1">
+                    <input type="text" id="split_output" name="output_folder" value="{{ default_output }}" placeholder="e.g. D:\Videos\Clips" class="w-full pl-3.5 pr-10 py-2.5 bg-white border border-[#E5DCD0] rounded-2xl text-sm focus:outline-none focus:border-[#E95722] transition text-[#111111]">
+                    <div id="split_output_status" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs flex items-center"></div>
+                </div>
+                <button type="button" onclick="window.fsExplorer.open('split_output', 'folder', 'Select Output Folder')" class="btn-solo-secondary px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                    <i data-lucide="folder-open" class="w-4 h-4 text-[#E95722]"></i>
+                    <span>Browse</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Parameters Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            <!-- Duration -->
+            <div class="bg-[#FAF4ED] p-4 rounded-2xl border border-[#E5DCD0]/60 space-y-2">
+                <div class="flex justify-between items-center">
+                    <label for="split_duration" class="text-xs font-bold text-[#111111]">Segment Duration</label>
+                    <span id="split_duration_val" class="text-xs font-bold text-[#E95722] bg-white px-2 py-0.5 rounded-full border border-[#E5DCD0]">10s</span>
+                </div>
+                <input type="range" id="split_duration_range" min="3" max="60" value="10" step="1" class="w-full accent-[#E95722] cursor-pointer">
+                <div class="flex justify-between text-[10px] text-[#777777]">
+                    <span>3 sec</span>
+                    <span>10 sec</span>
+                    <span>30 sec</span>
+                    <span>60 sec</span>
+                </div>
+            </div>
+
+            <!-- Prefix -->
+            <div class="bg-[#FAF4ED] p-4 rounded-2xl border border-[#E5DCD0]/60 space-y-2">
+                <label for="split_prefix" class="text-xs font-bold text-[#111111] block">File Prefix</label>
+                <input type="text" id="split_prefix" name="prefix" value="Clip" placeholder="e.g. Reel, Part" class="w-full px-3 py-1.5 bg-white border border-[#E5DCD0] rounded-xl text-sm focus:outline-none focus:border-[#E95722] text-[#111111]">
+                <p class="text-[10px] text-[#777777]">e.g. "Clip_part_001.mp4"</p>
+            </div>
+
+            <!-- Quality -->
+            <div class="bg-[#FAF4ED] p-4 rounded-2xl border border-[#E5DCD0]/60 space-y-2">
+                <label for="split_quality" class="text-xs font-bold text-[#111111] block">Video Quality (CRF)</label>
+                <select id="split_quality" name="compression" class="w-full px-3 py-1.5 bg-white border border-[#E5DCD0] rounded-xl text-sm focus:outline-none focus:border-[#E95722] text-[#111111]">
+                    <option value="18">High Quality (CRF 18, Larger)</option>
+                    <option value="23" selected>Balanced (CRF 23, Recommended)</option>
+                    <option value="28">Compact (CRF 28, Small File)</option>
+                </select>
+                <p class="text-[10px] text-[#777777]">Fast encoding & lossless audio copy</p>
+            </div>
+        </div>
+
+        <!-- Video Info Summary Banner -->
+        <div id="splitter-info-card" class="bg-[#FFFDF9] border border-[#F28A5B]/40 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-[#E95722]/10 flex items-center justify-center text-[#E95722]">
+                    <i data-lucide="film" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="text-xs text-[#777777]">Folder Status</div>
+                    <div id="splitter-info-text" class="text-sm font-bold text-[#111111]">Scanning input folder...</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 text-xs font-semibold text-[#111111]">
+                <div><span class="text-[#777777]">Videos:</span> <span id="splitter-info-count" class="text-[#E95722]">0</span></div>
+                <div><span class="text-[#777777]">Size:</span> <span id="splitter-info-size">0 MB</span></div>
+                <div><span class="text-[#777777]">Est. Clips:</span> <span id="splitter-info-parts" class="text-[#E95722]">~0</span></div>
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="pt-2">
+            <button type="submit" id="splitter-submit-btn" class="btn-solo-primary w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg">
+                <i data-lucide="scissors" class="w-4 h-4"></i>
+                <span id="splitter-btn-text">Split All Videos</span>
+                <span id="splitter-btn-loader" class="hidden"><i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i></span>
+            </button>
+        </div>
+    </form>
+
+    <!-- Splitter Clips Preview Section -->
+    <div id="splitter-preview-section" class="hidden mt-8 pt-6 border-t border-[#E5DCD0] space-y-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-[#E95722]/10 flex items-center justify-center text-[#E95722]">
+                    <i data-lucide="play-square" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-[#111111] font-headline">Generated Clips Preview</h3>
+                    <p class="text-[11px] text-[#777777]">Watch, inspect and download your split segments</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span id="splitter-clips-count-badge" class="bg-[#111111] text-white text-xs font-bold px-2.5 py-0.5 rounded-full">0 Clips</span>
+                <button type="button" onclick="window.splitter.loadClipsPreview()" class="text-xs text-[#777777] hover:text-[#E95722] flex items-center gap-1 font-semibold transition" title="Refresh clips list">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                    <span>Refresh</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Clips Grid -->
+        <div id="splitter-clips-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-[380px] overflow-y-auto pr-1">
+            <!-- Dynamic Cards populated by splitter.js -->
+        </div>
+    </div>
+</div>

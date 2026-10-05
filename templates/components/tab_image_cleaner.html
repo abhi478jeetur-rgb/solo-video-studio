@@ -1,0 +1,406 @@
+<!-- Tab: Image Watermark Studio -->
+<div id="tab-image-cleaner" class="tab-pane hidden">
+    <div class="mb-6">
+        <div class="flex items-center gap-2 mb-1">
+            <h2 class="text-2xl font-bold text-[#111111] font-headline">Image Watermark Studio</h2>
+            <span class="text-[10px] uppercase font-bold tracking-wider bg-orange-100 text-[#E95722] px-2.5 py-0.5 rounded-full border border-orange-200">AI Inpainting</span>
+        </div>
+        <p class="text-sm text-[#777777]">Auto-remove Gemini/Google AI sparkle watermarks or use the interactive canvas brush to erase any watermark across full image folders.</p>
+    </div>
+
+    <!-- Mode Selector Tabs -->
+    <div class="flex flex-wrap gap-2 mb-6">
+        <button type="button" id="img-mode-auto-btn" onclick="window.imageCleaner.setMode('gemini_auto')" class="px-4 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-2 bg-[#E95722] text-white border-[#E95722] shadow-sm">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            <span>Auto Gemini Watermark (1-Click Bulk)</span>
+        </button>
+        <button type="button" id="img-mode-canvas-btn" onclick="window.imageCleaner.setMode('canvas')" class="px-4 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-2 bg-white text-[#111111] border-[#E5DCD0] hover:border-[#E95722]">
+            <i data-lucide="brush" class="w-3.5 h-3.5"></i>
+            <span>Interactive Canvas (Brush & Box Selector)</span>
+        </button>
+    </div>
+
+    <!-- Main Configuration Form -->
+    <form id="image-cleaner-form" class="space-y-6">
+        <!-- Input & Output Folders -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Input Folder -->
+            <div class="space-y-1.5">
+                <label for="img_cleaner_input" class="text-xs font-bold text-[#111111] uppercase tracking-wider flex items-center justify-between">
+                    <span>Input Images Folder</span>
+                    <span id="img-input-count-badge" class="text-[10px] text-[#777777] font-semibold normal-case">0 images detected</span>
+                </label>
+                <div class="flex gap-2">
+                    <div class="relative flex-1">
+                        <input type="text" id="img_cleaner_input" name="input_folder" value="{{ default_input }}" placeholder="e.g. D:\Images\Gemini" class="w-full pl-3.5 pr-10 py-2.5 bg-white border border-[#E5DCD0] rounded-2xl text-sm focus:outline-none focus:border-[#E95722] text-[#111111]">
+                    </div>
+                    <button type="button" onclick="window.fsExplorer.open('img_cleaner_input', 'folder', 'Select Input Images Folder')" class="btn-solo-secondary px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                        <i data-lucide="folder-open" class="w-4 h-4 text-[#E95722]"></i>
+                        <span>Browse</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Output Folder -->
+            <div class="space-y-1.5">
+                <label for="img_cleaner_output" class="text-xs font-bold text-[#111111] uppercase tracking-wider">Output Folder (Clean Images)</label>
+                <div class="flex gap-2">
+                    <div class="relative flex-1">
+                        <input type="text" id="img_cleaner_output" name="output_folder" value="{{ default_output }}" placeholder="e.g. D:\Images\Cleaned" class="w-full pl-3.5 pr-10 py-2.5 bg-white border border-[#E5DCD0] rounded-2xl text-sm focus:outline-none focus:border-[#E95722] text-[#111111]">
+                    </div>
+                    <button type="button" onclick="window.fsExplorer.open('img_cleaner_output', 'folder', 'Select Output Folder')" class="btn-solo-secondary px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 whitespace-nowrap shadow-sm">
+                        <i data-lucide="folder-open" class="w-4 h-4 text-[#E95722]"></i>
+                        <span>Browse</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mode 1: Auto Gemini Info Banner -->
+        <div id="img-auto-info-card" class="bg-[#FAF4ED] p-4 rounded-2xl border border-[#E5DCD0] flex items-start gap-3">
+            <div class="w-8 h-8 rounded-xl bg-orange-100 text-[#E95722] flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+            </div>
+            <div class="flex-1 text-xs">
+                <h4 class="font-bold text-[#111111] mb-0.5">Auto Gemini / Google AI Watermark Detection Active</h4>
+                <p class="text-[#777777] leading-relaxed">
+                    AI Inpainting will automatically target the Gemini sparkle watermark in the bottom-right corner of each image, seamlessly reconstructing the background texture using Telea Navier-Stokes inpainting without reducing image quality.
+                </p>
+            </div>
+        </div>
+
+        <!-- Mode 2: Interactive Canvas Studio Container -->
+        <div id="img-canvas-studio-card" class="hidden bg-[#FAF4ED] p-5 rounded-2xl border border-[#E5DCD0] space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#E5DCD0] pb-3">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="edit-3" class="w-4 h-4 text-[#E95722]"></i>
+                    <span class="text-xs font-bold text-[#111111] uppercase tracking-wider">Interactive Watermark Mask Studio</span>
+                </div>
+                
+                <!-- Tool Selector -->
+                <div class="flex items-center gap-2">
+                    <button type="button" id="tool-box-btn" onclick="window.imageCleaner.setCanvasTool('box')" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 bg-[#111111] text-white border-[#111111]">
+                        <i data-lucide="crop" class="w-3.5 h-3.5"></i>
+                        <span>Select Box</span>
+                    </button>
+                    <button type="button" id="tool-brush-btn" onclick="window.imageCleaner.setCanvasTool('brush')" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 bg-white text-[#111111] border-[#E5DCD0] hover:border-[#E95722]">
+                        <i data-lucide="paint-brush" class="w-3.5 h-3.5"></i>
+                        <span>Brush</span>
+                    </button>
+                    <!-- Brush Size Slider -->
+                    <div id="brush-size-container" class="hidden items-center gap-1.5 bg-white px-2 py-1 rounded-xl border border-[#E5DCD0]">
+                        <span class="text-[10px] text-[#777777] font-bold">Size:</span>
+                        <input type="range" id="canvas-brush-size" min="5" max="60" value="20" class="w-16 h-1.5 accent-[#E95722] cursor-pointer" oninput="document.getElementById('brush-val').textContent=this.value+'px'">
+                        <span id="brush-val" class="text-[10px] font-mono text-[#111111] font-bold">20px</span>
+                    </div>
+                    <button type="button" onclick="window.imageCleaner.autoMarkGeminiCorner()" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-orange-200 bg-orange-50 text-[#E95722] hover:bg-orange-100 transition flex items-center gap-1">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                        <span>Mark Corner</span>
+                    </button>
+                    <button type="button" onclick="window.imageCleaner.clearCanvasMask()" class="px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition">
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Image Loader Controls -->
+            <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-[#777777]">Sample Image:</span>
+                    <select id="canvas-sample-select" class="px-3 py-1.5 bg-white border border-[#E5DCD0] rounded-xl text-xs font-medium text-[#111111] max-w-xs truncate" onchange="window.imageCleaner.loadSelectedSample(this.value)">
+                        <option value="">Select an image from input folder...</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label for="canvas-upload-input" class="cursor-pointer px-3 py-1.5 rounded-xl bg-white border border-[#E5DCD0] hover:border-[#E95722] text-[#111111] font-semibold flex items-center gap-1.5">
+                        <i data-lucide="upload" class="w-3.5 h-3.5 text-[#E95722]"></i>
+                        <span>Upload Custom Image</span>
+                    </label>
+                    <input type="file" id="canvas-upload-input" accept="image/*" class="hidden" onchange="window.imageCleaner.handleCustomImageUpload(this)">
+                </div>
+            </div>
+
+            <!-- Canvas Workspace -->
+            <div class="relative bg-white rounded-2xl border border-[#E5DCD0] overflow-hidden flex items-center justify-center min-h-[300px] max-h-[500px]">
+                <div id="canvas-empty-state" class="p-8 text-center text-[#777777] space-y-2">
+                    <i data-lucide="image" class="w-10 h-10 mx-auto text-[#E5DCD0]"></i>
+                    <p class="font-medium text-xs">Select an image from the dropdown above or browse your input folder</p>
+                </div>
+                
+                <div id="canvas-wrapper" class="hidden relative max-w-full max-h-[500px] overflow-auto">
+                    <!-- Base Canvas displaying the image -->
+                    <canvas id="img-base-canvas" class="block max-w-full max-h-[480px] object-contain shadow-sm"></canvas>
+                    <!-- Overlay Canvas for user drawing/selection -->
+                    <canvas id="img-draw-canvas" class="absolute top-0 left-0 w-full h-full cursor-crosshair"></canvas>
+                </div>
+            </div>
+
+            <!-- Canvas Quick Actions -->
+            <div class="flex items-center justify-between pt-1">
+                <div class="text-[11px] text-[#777777]">
+                    <span id="canvas-selection-status">Drag a rectangle or brush directly over the watermark</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="preview-inpaint-btn" onclick="window.imageCleaner.testInpaintPreview()" class="btn-solo-secondary px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                        <i data-lucide="eye" class="w-3.5 h-3.5 text-[#E95722]"></i>
+                        <span>Test Inpaint Preview</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Live Before / After Comparison Modal / Box -->
+            <div id="inpaint-preview-card" class="hidden mt-3 bg-white p-4 rounded-2xl border border-[#E5DCD0] space-y-3">
+                <div class="flex items-center justify-between">
+                    <h5 class="text-xs font-bold text-[#111111] flex items-center gap-1.5">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+                        <span>AI Inpaint Result Preview</span>
+                    </h5>
+                    <button type="button" onclick="document.getElementById('inpaint-preview-card').classList.add('hidden')" class="text-xs text-[#777777] hover:text-[#111111]">Close</button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">Original (Watermarked)</span>
+                        <div class="rounded-xl border border-[#E5DCD0] overflow-hidden bg-neutral-100 flex items-center justify-center max-h-56">
+                            <img id="preview-before-img" class="max-h-56 w-auto object-contain" alt="Original">
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Cleaned (Watermark Removed)</span>
+                        <div class="rounded-xl border border-[#E5DCD0] overflow-hidden bg-neutral-100 flex items-center justify-center max-h-56">
+                            <img id="preview-after-img" class="max-h-56 w-auto object-contain" alt="Cleaned">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Channel Branding & Reels Header Stamp Card -->
+        <div class="bg-[#FAF4ED] p-5 rounded-2xl border border-[#E5DCD0] space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-orange-100 text-[#E95722] flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="badge-check" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-[#111111] uppercase tracking-wider">Channel Branding & Reels Header Stamp</h4>
+                        <p class="text-[11px] text-[#777777]">Stamp your viral social profile header (Avatar + Blue Tick + Name + Handle) onto images</p>
+                    </div>
+                </div>
+                <!-- Enable / Disable Switch -->
+                <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-[#E5DCD0]">
+                    <input type="checkbox" id="stamp-enabled-toggle" onchange="window.imageCleaner.toggleStamp(this.checked)" class="w-4 h-4 accent-[#E95722] rounded cursor-pointer">
+                    <label for="stamp-enabled-toggle" class="text-xs font-bold text-[#111111] cursor-pointer select-none">Enable Brand Stamp</label>
+                </div>
+            </div>
+
+            <!-- Expandable Stamp Configuration Panel -->
+            <div id="stamp-config-panel" class="hidden space-y-4 pt-3 border-t border-[#E5DCD0] animate-in fade-in duration-200">
+                <!-- Viral Template Selector -->
+                <div>
+                    <label class="text-[11px] font-bold text-[#777777] uppercase tracking-wider block mb-2">1. Choose Viral Template Style</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <button type="button" id="stamp-tpl-classic_card" onclick="window.imageCleaner.setStampTemplate('classic_card')" class="stamp-tpl-btn p-2.5 rounded-xl border text-left transition bg-[#111111] text-white border-[#111111] shadow-sm">
+                            <span class="block text-xs font-bold">📱 Reels Card</span>
+                            <span class="block text-[10px] opacity-75">Classic Dark Box</span>
+                        </button>
+                        <button type="button" id="stamp-tpl-floating_pill" onclick="window.imageCleaner.setStampTemplate('floating_pill')" class="stamp-tpl-btn p-2.5 rounded-xl border text-left transition bg-white text-[#111111] border-[#E5DCD0] hover:border-[#E95722]">
+                            <span class="block text-xs font-bold">💊 Floating Pill</span>
+                            <span class="block text-[10px] text-[#777777]">Modern Glass Capsule</span>
+                        </button>
+                        <button type="button" id="stamp-tpl-minimal_stamp" onclick="window.imageCleaner.setStampTemplate('minimal_stamp')" class="stamp-tpl-btn p-2.5 rounded-xl border text-left transition bg-white text-[#111111] border-[#E5DCD0] hover:border-[#E95722]">
+                            <span class="block text-xs font-bold">⚡ Minimal Stamp</span>
+                            <span class="block text-[10px] text-[#777777]">100% Transparent</span>
+                        </button>
+                        <button type="button" id="stamp-tpl-compact_inline" onclick="window.imageCleaner.setStampTemplate('compact_inline')" class="stamp-tpl-btn p-2.5 rounded-xl border text-left transition bg-white text-[#111111] border-[#E5DCD0] hover:border-[#E95722]">
+                            <span class="block text-xs font-bold">🏷️ Compact Bar</span>
+                            <span class="block text-[10px] text-[#777777]">Single Line Badge</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Settings Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Left: Identity Controls -->
+                    <div class="space-y-3 bg-white p-4 rounded-xl border border-[#E5DCD0]">
+                        <div class="flex items-center gap-3">
+                            <!-- Logo Avatar Preview & Upload -->
+                            <div class="relative group cursor-pointer">
+                                <div id="stamp-avatar-ring-preview" class="w-14 h-14 rounded-full border-2 border-[#FF6B00] overflow-hidden bg-neutral-100 flex items-center justify-center shadow-sm">
+                                    <img id="stamp-logo-img" src="https://via.placeholder.com/150/FFF8F0/FF6B00?text=LOGO" class="w-full h-full object-cover" alt="Profile Logo">
+                                </div>
+                                <label for="stamp-logo-file" class="absolute inset-0 rounded-full bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer text-[10px] font-bold">
+                                    Change
+                                </label>
+                                <input type="file" id="stamp-logo-file" accept="image/*" class="hidden" onchange="window.imageCleaner.handleLogoUpload(this)">
+                            </div>
+                            <div class="flex-1">
+                                <label class="text-[11px] font-bold text-[#111111] block">Channel Profile Logo</label>
+                                <span class="text-[10px] text-[#777777] block">Upload your avatar / brand logo (PNG/JPG)</span>
+                            </div>
+                        </div>
+
+                        <!-- Name & Handle -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] font-bold text-[#777777] block mb-1">Display Name</label>
+                                <input type="text" id="stamp-name-input" value="Solo Vibe" class="w-full px-3 py-1.5 bg-[#FAF4ED] border border-[#E5DCD0] rounded-lg text-xs font-semibold text-[#111111]" oninput="window.imageCleaner.updateHeaderPreview()">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-[#777777] block mb-1">Handle / Username</label>
+                                <input type="text" id="stamp-handle-input" value="@solovibecode" class="w-full px-3 py-1.5 bg-[#FAF4ED] border border-[#E5DCD0] rounded-lg text-xs font-semibold text-[#111111]" oninput="window.imageCleaner.updateHeaderPreview()">
+                            </div>
+                        </div>
+
+                        <!-- Placement on Target Images -->
+                        <div>
+                            <label class="text-[10px] font-bold text-[#777777] block mb-1">Stamp Placement on Image</label>
+                            <select id="stamp-position-select" class="w-full px-3 py-1.5 bg-[#FAF4ED] border border-[#E5DCD0] rounded-lg text-xs font-semibold text-[#111111]" onchange="window.imageCleaner.onPositionChange(this.value)">
+                                <option value="top-center" selected>Top-Center (Standard Instagram Reels / Shorts)</option>
+                                <option value="top-left">Top-Left Corner</option>
+                                <option value="top-right">Top-Right Corner</option>
+                                <option value="bottom-center">Bottom-Center</option>
+                                <option value="bottom-left">Bottom-Left Corner</option>
+                                <option value="bottom-right">Bottom-Right Corner</option>
+                                <option value="center">Center of Image</option>
+                                <option value="custom">Custom (Click on Canvas to Place!)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Right: Colors & Styling -->
+                    <div class="space-y-3 bg-white p-4 rounded-xl border border-[#E5DCD0]">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] font-bold text-[#777777] block mb-1">Avatar Ring Color</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="stamp-ring-color" value="#FF6B00" class="w-8 h-8 rounded-lg cursor-pointer border border-[#E5DCD0]" oninput="window.imageCleaner.updateHeaderPreview()">
+                                    <span id="stamp-ring-val" class="font-mono text-[11px] text-[#111111]">#FF6B00</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-[#777777] block mb-1">Background Style</label>
+                                <select id="stamp-bg-style" class="w-full px-2.5 py-1.5 bg-[#FAF4ED] border border-[#E5DCD0] rounded-lg text-xs font-semibold text-[#111111]" onchange="window.imageCleaner.updateHeaderPreview()">
+                                    <option value="#000000" selected>Pure Black (#000000)</option>
+                                    <option value="#0F1218">Dark Glass Tint</option>
+                                    <option value="transparent">Transparent PNG</option>
+                                    <option value="#00FF00">Chroma Green (#00FF00)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] font-bold text-[#777777] block mb-1">Text Color</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="stamp-text-color" value="#FFFFFF" class="w-8 h-8 rounded-lg cursor-pointer border border-[#E5DCD0]" oninput="window.imageCleaner.updateHeaderPreview()">
+                                    <span class="font-mono text-[11px] text-[#111111]">#FFFFFF</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-[#777777] block mb-1">Handle Color</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="stamp-handle-color" value="#71767B" class="w-8 h-8 rounded-lg cursor-pointer border border-[#E5DCD0]" oninput="window.imageCleaner.updateHeaderPreview()">
+                                    <span class="font-mono text-[11px] text-[#111111]">#71767B</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="stamp-verified-toggle" checked class="w-4 h-4 accent-[#1DA1F2] rounded cursor-pointer" onchange="window.imageCleaner.updateHeaderPreview()">
+                                <label for="stamp-verified-toggle" class="text-xs font-semibold text-[#111111] flex items-center gap-1 cursor-pointer">
+                                    <span class="text-[#1DA1F2] font-bold">✓ Blue Tick</span>
+                                    <span>Verified</span>
+                                </label>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] text-[#777777] font-bold">Scale:</span>
+                                <input type="range" id="stamp-scale-slider" min="0.5" max="1.5" step="0.05" value="1.0" class="w-16 h-1.5 accent-[#E95722] cursor-pointer" oninput="document.getElementById('stamp-scale-val').textContent=Math.round(this.value*100)+'%'; window.imageCleaner.updateHeaderPreview()">
+                                <span id="stamp-scale-val" class="font-mono text-[10px] text-[#111111] font-bold">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Header Stamp Preview Card & Standalone Downloader -->
+                <div class="bg-neutral-900 p-5 rounded-2xl border border-neutral-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="w-full flex flex-col items-center sm:items-start">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-orange-400 mb-2">Live Stamp Output Preview</span>
+                        <div id="stamp-live-preview-container" class="p-3 bg-neutral-950/80 rounded-xl border border-neutral-800 flex items-center justify-center max-w-full overflow-x-auto">
+                            <!-- Live Dynamic Header Graphic -->
+                            <img id="stamp-live-preview-img" src="" class="max-h-20 max-w-full object-contain drop-shadow-md" alt="Header Preview">
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0 w-full sm:w-auto">
+                        <button type="button" onclick="window.imageCleaner.downloadStandaloneHeader()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md transition">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Download 4K PNG Header</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action / Process Button -->
+        <div class="pt-2">
+            <button type="button" id="img-bulk-submit-btn" onclick="window.imageCleaner.startBulkJob()" class="btn-solo-primary w-full py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <span id="img-btn-text">Clean All Images in Bulk Folder</span>
+                <span id="img-btn-loader" class="hidden"><i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i></span>
+            </button>
+        </div>
+    </form>
+
+    <!-- Bulk Images Live Progress Card -->
+    <div id="img-progress-card" class="hidden mt-6 bg-[#FAF4ED] rounded-2xl p-5 border border-[#E5DCD0] space-y-3 animate-in fade-in duration-200">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-[#E95722]/15 flex items-center justify-center text-[#E95722]">
+                    <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+                </div>
+                <div>
+                    <h4 id="img-progress-title" class="text-xs font-bold text-[#111111] uppercase tracking-wider">Removing Watermarks</h4>
+                    <p id="img-progress-detail" class="text-xs text-[#777777] font-medium truncate max-w-sm sm:max-w-md">Processing images with Telea inpainting...</p>
+                </div>
+            </div>
+            <span id="img-progress-percent" class="text-sm font-black font-mono text-[#E95722] bg-white px-2.5 py-1 rounded-xl border border-[#E5DCD0]">0%</span>
+        </div>
+
+        <!-- Progress Bar Track -->
+        <div class="w-full h-3 bg-white rounded-full overflow-hidden border border-[#E5DCD0]/80 p-0.5">
+            <div id="img-progress-bar" class="h-full bg-[#E95722] rounded-full transition-all duration-300 shadow-sm" style="width: 0%"></div>
+        </div>
+
+        <div class="flex justify-between items-center text-[11px] text-[#777777]">
+            <span id="img-progress-step">Image 0 of 0</span>
+            <span class="text-[#E95722] font-semibold">Lossless inpainting & clean export</span>
+        </div>
+    </div>
+
+    <!-- Cleaned Images Preview Gallery -->
+    <div id="img-gallery-section" class="hidden mt-8 pt-6 border-t border-[#E5DCD0] space-y-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-[#E95722]/10 flex items-center justify-center text-[#E95722]">
+                    <i data-lucide="images" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-[#111111] font-headline">Cleaned Images Gallery</h3>
+                    <p class="text-[11px] text-[#777777]">Watermark-free images saved to output folder</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span id="img-gallery-count-badge" class="bg-[#111111] text-white text-xs font-bold px-2.5 py-0.5 rounded-full">0 Images</span>
+                <button type="button" onclick="window.imageCleaner.loadGallery()" class="text-xs text-[#777777] hover:text-[#E95722] flex items-center gap-1 font-semibold transition" title="Refresh gallery">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                    <span>Refresh</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Images Grid -->
+        <div id="img-gallery-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[420px] overflow-y-auto pr-1">
+            <!-- Populated dynamically by image_cleaner.js -->
+        </div>
+    </div>
+</div>

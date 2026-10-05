@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solo Video Studio — Premium Multi-Tool Suite</title>
+    <meta name="description" content="AI creator video studio: 10s splitter, bulk watermark cleaner, and storyboard generator.">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        solo: {
+                            orange: '#E95722',
+                            cream: '#F7EBDD',
+                            creamLight: '#FDF9F3',
+                            black: '#111111',
+                            gray: '#777777',
+                            grayLight: '#E5DCD0',
+                            softOrange: '#F28A5B'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+<body class="bg-[#F7EBDD] text-[#111111] antialiased min-h-screen flex flex-col selection:bg-[#E95722] selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="w-full bg-[#FFFFFF]/90 backdrop-blur-md border-b border-[#E5DCD0] sticky top-0 z-40 px-4 sm:px-8 py-3.5">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <!-- Brand Logo & Identity -->
+            <div class="flex items-center gap-3.5">
+                <!-- Solo Mascot SVG -->
+                <div class="relative w-11 h-11 flex-shrink-0 cursor-pointer" title="Solo - Your Video AI Companion">
+                    <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-sm">
+                        <!-- Antenna Spark -->
+                        <polygon points="50,4 52,14 62,16 52,18 50,28 48,18 38,16 48,14" fill="#E95722" class="mascot-spark"/>
+                        <!-- Antenna Pole -->
+                        <line x1="50" y1="26" x2="50" y2="34" stroke="#111111" stroke-width="4" stroke-linecap="round"/>
+                        <!-- Head / Body (Rounded Box) -->
+                        <rect x="18" y="32" width="64" height="52" rx="18" fill="#E95722"/>
+                        <!-- Soft Inner Glow -->
+                        <rect x="22" y="36" width="56" height="44" rx="14" fill="#F28A5B" opacity="0.3"/>
+                        <!-- Minimal Eyes -->
+                        <rect x="34" y="52" width="7" height="9" rx="3.5" fill="#111111"/>
+                        <rect x="59" y="52" width="7" height="9" rx="3.5" fill="#111111"/>
+                        <!-- Minimal Smile -->
+                        <path d="M 44 64 Q 50 69 56 64" stroke="#111111" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+                        <!-- Feet -->
+                        <rect x="32" y="84" width="10" height="7" rx="3.5" fill="#E95722"/>
+                        <rect x="58" y="84" width="10" height="7" rx="3.5" fill="#E95722"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-headline font-black text-xl tracking-tight text-[#111111]">MEET <span class="text-[#E95722]">SOLO</span></span>
+                        <span class="text-[10px] uppercase font-bold tracking-wider bg-[#E95722]/10 text-[#E95722] px-2 py-0.5 rounded-full border border-[#E95722]/20">Video Studio</span>
+                    </div>
+                    <p class="text-xs text-[#777777] hidden sm:block">Automated 10s Splitter, Watermark Cleaner & Storyboard Creator</p>
+                </div>
+            </div>
+
+            <!-- Header Status Badges -->
+            <div class="flex items-center gap-2.5">
+                {% if ffmpeg_ok %}
+                <div class="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>FFmpeg Ready</span>
+                </div>
+                {% else %}
+                <div class="flex items-center gap-1.5 text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-full shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                    <span>FFmpeg Missing</span>
+                </div>
+                {% endif %}
+
+                <!-- Explorer Quick Trigger -->
+                <button type="button" onclick="window.fsExplorer.open(null, 'folder', 'Local File Explorer')" class="p-2 rounded-full border border-[#E5DCD0] bg-white hover:bg-[#FAF4ED] text-[#111111] transition shadow-sm" title="Quick Explorer">
+                    <i data-lucide="hard-drive" class="w-4 h-4 text-[#777777]"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-8 py-8 flex flex-col gap-6">
+
+        <!-- Tool Selection Tab Switcher -->
+        <nav class="flex justify-center" aria-label="Tool Tabs">
+            <div class="bg-white/80 backdrop-blur-sm p-1.5 rounded-full border border-[#E5DCD0] flex flex-wrap gap-1 shadow-sm">
+                <button type="button" class="nav-tab-btn active px-4 sm:px-5 py-2 text-xs font-bold flex items-center gap-2" data-target="tab-splitter">
+                    <i data-lucide="scissors" class="w-3.5 h-3.5"></i>
+                    <span>Splitter</span>
+                </button>
+                <button type="button" class="nav-tab-btn px-4 sm:px-5 py-2 text-xs font-bold flex items-center gap-2" data-target="tab-bulk-editor">
+                    <i data-lucide="video" class="w-3.5 h-3.5"></i>
+                    <span>Bulk Video</span>
+                </button>
+                <button type="button" class="nav-tab-btn px-4 sm:px-5 py-2 text-xs font-bold flex items-center gap-2" data-target="tab-image-cleaner">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E95722]"></i>
+                    <span>Image Cleaner</span>
+                </button>
+                <button type="button" class="nav-tab-btn px-4 sm:px-5 py-2 text-xs font-bold flex items-center gap-2" data-target="tab-voice-cleaner">
+                    <i data-lucide="mic" class="w-3.5 h-3.5 text-[#E95722]"></i>
+                    <span>Voice Cleaner</span>
+                </button>
+                <button type="button" class="nav-tab-btn px-4 sm:px-5 py-2 text-xs font-bold flex items-center gap-2" data-target="tab-storyboard">
+                    <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                    <span>Storyboard</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Workspace Card -->
+        <section class="solo-card rounded-3xl p-6 sm:p-10 relative overflow-hidden">
+            <!-- Decorative Subtle Brand Accent Glow -->
+            <div class="absolute -top-24 -right-24 w-60 h-60 rounded-full bg-[#E95722]/5 blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-60 h-60 rounded-full bg-[#F28A5B]/10 blur-3xl pointer-events-none"></div>
+
+            <!-- Tab 1: Splitter -->
+            {% include 'components/tab_splitter.html' %}
+
+            <!-- Tab 2: Bulk Editor -->
+            {% include 'components/tab_bulk.html' %}
+
+            <!-- Tab 3: Image Cleaner Studio -->
+            {% include 'components/tab_image_cleaner.html' %}
+
+            <!-- Tab 4: Voice Cleaner Studio -->
+            {% include 'components/tab_voice_cleaner.html' %}
+
+            <!-- Tab 5: Storyboard -->
+            {% include 'components/tab_storyboard.html' %}
+        </section>
+
+        <!-- Result / Output Notification Box -->
+        <div id="output-result-card" class="hidden solo-card rounded-2xl p-5 border-l-4 border-l-[#E95722] animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div class="flex items-start justify-between">
+                <div class="flex items-start gap-3">
+                    <div id="result-icon-container" class="w-8 h-8 rounded-xl bg-[#E95722]/10 text-[#E95722] flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i data-lucide="check-circle" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 id="result-title" class="text-sm font-bold text-[#111111]">Process Completed</h4>
+                        <p id="result-message" class="text-xs text-[#777777] mt-1"></p>
+                        <div id="result-actions" class="mt-3 flex items-center gap-2"></div>
+                    </div>
+                </div>
+                <button type="button" onclick="document.getElementById('output-result-card').classList.add('hidden')" class="text-[#777777] hover:text-[#111111]">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <!-- Error Details Accordion (If any) -->
+            <div id="result-error-details" class="hidden mt-3 pt-3 border-t border-[#E5DCD0]">
+                <details class="text-xs text-rose-700 bg-rose-50 p-3 rounded-xl border border-rose-200">
+                    <summary class="font-bold cursor-pointer">Technical Error Details (Click to Expand)</summary>
+                    <pre id="result-error-text" class="mt-2 whitespace-pre-wrap font-mono text-[11px] overflow-x-auto max-h-48"></pre>
+                </details>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-[#E5DCD0] bg-white py-4 px-6 text-center text-xs text-[#777777]">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div class="flex items-center gap-2 font-medium">
+                <span class="w-2 h-2 rounded-full bg-[#E95722]"></span>
+                <span>Solo Vibe Formula: Value (80%) + Authority (15%) + Offer (5%)</span>
+            </div>
+            <div class="text-[#777777]">
+                Local Python & FFmpeg High-Speed Processing Engine
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive File Explorer Modal Component -->
+    {% include 'components/fs_modal.html' %}
+
+    <!-- Video & Image Preview Modals -->
+    {% include 'components/preview_modal.html' %}
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+    <!-- Application JavaScript Modules -->
+    <script src="{{ url_for('static', filename='js/fs_explorer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/splitter.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bulk.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/image_cleaner.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/voice_cleaner.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/storyboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>

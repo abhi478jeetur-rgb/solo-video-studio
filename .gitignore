@@ -1,0 +1,32 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pytest_cache/
+
+# Media storage (keep folders, ignore generated/uploaded media files)
+input/*
+!input/.gitkeep
+output/*
+!output/.gitkeep
+uploads/*
+!uploads/.gitkeep
+!uploads/voices/
+uploads/voices/*
+!uploads/voices/.gitkeep
+!uploads/temp/
+uploads/temp/*
+!uploads/temp/.gitkeep
+
+# Temporary / Scratch files
+test.mp4
+*.log
+
+# OS Generated
+.DS_Store
+Thumbs.db
