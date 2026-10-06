@@ -9,6 +9,7 @@ echo ===================================================
 netstat -ano | findstr /R /C:":5000 *LISTENING" >nul
 if %ERRORLEVEL% EQU 0 (
     echo Server is already active on http://127.0.0.1:5000
+    echo Mobile Phone URL: http://192.168.31.23:5000 (connect to same Wi-Fi)
     start http://127.0.0.1:5000
     exit /b
 )
@@ -17,5 +18,12 @@ if %ERRORLEVEL% EQU 0 (
 start "Solo Video Studio Backend" /min ".\venv\Scripts\python.exe" app.py
 echo Waiting for server to initialize...
 timeout /t 2 /nobreak >nul
+echo.
+echo ===================================================
+echo  Solo Studio is LIVE!
+echo  Desktop PC:  http://127.0.0.1:5000
+echo  Mobile/Phone: http://192.168.31.23:5000
+echo ===================================================
+echo.
 start http://127.0.0.1:5000
 exit

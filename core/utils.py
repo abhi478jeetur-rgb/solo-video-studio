@@ -100,7 +100,14 @@ def format_seconds(seconds):
     return f"{mins:02d}:{secs:02d}"
 
 def check_ffmpeg():
-    return shutil.which('ffmpeg') is not None and shutil.which('ffprobe') is not None
+    if shutil.which('ffmpeg') is not None and shutil.which('ffprobe') is not None:
+        return True
+    try:
+        import static_ffmpeg
+        static_ffmpeg.add_paths()
+        return shutil.which('ffmpeg') is not None and shutil.which('ffprobe') is not None
+    except Exception:
+        return False
 
 def get_audio_metadata(file_path):
     """Returns dictionary of audio format, duration, channels, sample_rate, bitrate."""

@@ -114,4 +114,7 @@ if __name__ == '__main__':
     print(f"[INFO] Base Dir: {BASE_DIR}")
     print(f"[INFO] Python: {sys.executable}")
     print(f"[INFO] FFmpeg installed: {check_ffmpeg()}")
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    print("[INFO] Local URL:   http://localhost:5000")
+    print("[INFO] Network URL: http://0.0.0.0:5000 (accessible on Phone/LAN via your PC's IP)")
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
